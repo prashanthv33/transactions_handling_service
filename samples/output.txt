@@ -1,0 +1,62 @@
+$ java -jar target/txn-service.jar --spring.profiles.active=batch --input=samples/input.json
+
+INFO event=txn.received transactionId=TXN-2002 account=ACC***1 seq=2
+INFO event=txn.received transactionId=TXN-2001 account=ACC***1 seq=1
+INFO event=delivery.duplicate transactionId=TXN-2002 requestId=REQ-2-DUP
+INFO event=txn.received transactionId=TXN-2003 account=ACC***1 seq=3
+WARN event=delivery.rejected transactionId=TXN-2004 requestId=REQ-4 reason="amount must be greater than zero"
+INFO event=txn.received transactionId=TXN-2005 account=ACC***3 seq=5
+----------------------------------------------------------------------------------------------------
+INGESTION (in arrival order)
+----------------------------------------------------------------------------------------------------
+#    requestId    transaction  outcome    reason
+1    REQ-2        TXN-2002     ACCEPTED   
+2    REQ-1        TXN-2001     ACCEPTED   
+3    REQ-2-DUP    TXN-2002     DUPLICATE  Already received with an identical payload
+4    REQ-3        TXN-2003     ACCEPTED   
+5    REQ-4        TXN-2004     REJECTED   amount must be greater than zero
+6    REQ-5        TXN-2005     ACCEPTED   
+INFO event=txn.processed transactionId=TXN-2001 account=ACC***1 seq=1 attempt=1
+INFO event=txn.processed transactionId=TXN-2002 account=ACC***1 seq=2 attempt=1
+INFO event=txn.processed transactionId=TXN-2003 account=ACC***1 seq=3 attempt=1
+WARN event=txn.retry_scheduled transactionId=TXN-2005 attempt=1 nextAttemptAt=2026-11-11T16:07:22.751Z reason="Simulated transient downstream failure"
+INFO event=txn.processed transactionId=TXN-2005 account=ACC***3 seq=5 attempt=2
+----------------------------------------------------------------------------------------------------
+TRANSACTIONS (final state)
+----------------------------------------------------------------------------------------------------
+txn        account  type       seq     amount status         att  detail
+TXN-2001   ACC-201  CREDIT       1    100 USD PROCESSED        1  
+TXN-2002   ACC-201  DEBIT        2     40 USD PROCESSED        1  
+TXN-2003   ACC-201  CREDIT       3     25 USD PROCESSED        1  
+TXN-2004   ACC-202  -            4          - REJECTED         0  amount must be greater than zero
+TXN-2005   ACC-203  CREDIT       5    500 USD PROCESSED        2  
+----------------------------------------------------------------------------------------------------
+SUMMARY
+----------------------------------------------------------------------------------------------------
+Deliveries received : 6  {ACCEPTED=4, DUPLICATE=1, REJECTED=1}
+Transactions        : 5  {PROCESSED=4, REJECTED=1}
+Retried             : 1 transaction(s), 1 retry attempt(s)
+Ledger entries      : 4
+Duplicate           : REQ-2-DUP -> TXN-2002
+Rejected            : REQ-4 -> TXN-2004 (amount must be greater than zero)
+Balances            : ACC-201=85 USD  ACC-203=500 USD  
+----------------------------------------------------------------------------------------------------
+
+# Second run against the same database (replay of the whole batch):
+
+SUMMARY
+----------------------------------------------------------------------------------------------------
+Deliveries received : 12  {ACCEPTED=4, DUPLICATE=7, REJECTED=1}
+Transactions        : 5  {PROCESSED=4, REJECTED=1}
+Retried             : 1 transaction(s), 1 retry attempt(s)
+Ledger entries      : 4
+Duplicate           : REQ-2-DUP -> TXN-2002
+Duplicate           : REQ-2 -> TXN-2002
+Duplicate           : REQ-1 -> TXN-2001
+Duplicate           : REQ-2-DUP -> TXN-2002
+Duplicate           : REQ-3 -> TXN-2003
+Duplicate           : REQ-4 -> TXN-2004
+Duplicate           : REQ-5 -> TXN-2005
+Rejected            : REQ-4 -> TXN-2004 (amount must be greater than zero)
+Balances            : ACC-201=85 USD  ACC-203=500 USD  
+----------------------------------------------------------------------------------------------------

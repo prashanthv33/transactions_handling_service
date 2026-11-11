@@ -1,0 +1,12 @@
+[
+  { "transactionId": "TXN-3001", "requestId": "REQ-3001",     "sequenceNumber": 1, "accountId": "ACC-301", "transactionType": "CREDIT",   "amount": 50,   "currency": "EUR" },
+  { "transactionId": "TXN-3001", "requestId": "REQ-3001-BAD", "sequenceNumber": 1, "accountId": "ACC-301", "transactionType": "CREDIT",   "amount": 5000, "currency": "EUR" },
+  { "transactionId": "TXN-3003", "requestId": "REQ-3003",     "sequenceNumber": 3, "accountId": "ACC-301", "transactionType": "CREDIT",   "amount": 10,   "currency": "EUR" },
+  { "transactionId": "TXN-3002", "requestId": "REQ-3002",     "sequenceNumber": 2, "accountId": "ACC-301", "transactionType": "DEBIT",    "amount": 80,   "currency": "EUR" },
+  { "transactionId": "TXN-3004", "requestId": "REQ-3004",     "sequenceNumber": 4, "accountId": "ACC-301", "transactionType": "REVERSAL", "amount": 10,   "currency": "EUR", "originalTransactionId": "TXN-3003" },
+  { "transactionId": "TXN-3005", "requestId": "REQ-3005",     "sequenceNumber": 5, "accountId": "ACC-301", "transactionType": "REVERSAL", "amount": 10,   "currency": "EUR", "originalTransactionId": "TXN-3003" },
+  { "transactionId": "TXN-3007", "requestId": "REQ-3007",     "sequenceNumber": 7, "accountId": "ACC-301", "transactionType": "CREDIT",   "amount": 5,    "currency": "EUR" },
+  { "transactionId": "TXN-3101", "requestId": "REQ-3101",     "sequenceNumber": 1, "accountId": "ACC-302", "transactionType": "CREDIT",   "amount": { "value": 1 }, "currency": "EUR" },
+  { "requestId": "REQ-NO-ID", "sequenceNumber": 1, "accountId": "ACC-303", "transactionType": "CREDIT", "amount": 1, "currency": "EUR" },
+  { "transactionId": "TXN-3201", "requestId": "REQ-3201",     "sequenceNumber": 1, "accountId": "ACC-304", "transactionType": "TRANSFER", "amount": 1,    "currency": "eur" }
+]
