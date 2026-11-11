@@ -1,0 +1,44 @@
+spring:
+  application:
+    name: txn-service
+  datasource:
+    # Embedded, file-backed H2 so state (and idempotency) survives restarts. Swap for PostgreSQL in production.
+    url: ${DB_URL:jdbc:h2:file:./data/txndb}
+    username: ${DB_USER:sa}
+    password: ${DB_PASSWORD:}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+
+server:
+  port: ${PORT:8080}
+  error:
+    include-stacktrace: never
+    include-message: never
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+processing:
+  max-attempts: 3            # first try + 2 retries
+  base-backoff: 200ms        # retry delay doubles: 200ms, 400ms, ...
+  reorder-window: 5s         # buffer for a brand-new account's out-of-order events (server mode)
+  gap-alert-after: 5m        # alert when an account waits this long on a missing sequence
+  worker:
+    enabled: true
+    interval-ms: 500
+  fault:
+    # Simulated transient failures for the demo: transactionId -> number of times to fail.
+    transient-failures:
+      "[TXN-2005]": 1
+
+logging:
+  level:
+    root: WARN
+    com.fde.txn: INFO
+  # Uncomment for JSON logs (includes MDC: transactionId, requestId, attempt):
+  # structured.format.console: logstash
