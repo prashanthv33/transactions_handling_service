@@ -40,5 +40,8 @@ logging:
   level:
     root: WARN
     com.fde.txn: INFO
+    # Constraint violations from concurrent duplicate inserts are expected and handled (classified as
+    # DUPLICATE); don't let Hibernate log them as ERROR. Unhandled failures are still logged by our code.
+    org.hibernate.engine.jdbc.spi.SqlExceptionHelper: OFF
   # Uncomment for JSON logs (includes MDC: transactionId, requestId, attempt):
   # structured.format.console: logstash
