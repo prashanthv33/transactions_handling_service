@@ -1,6 +1,6 @@
 # Idempotent Background Transaction Processing Service
 
-A background service that applies transaction requests **exactly once in effect** and **in the correct order per account**. It is built for input that is duplicated, out of order, or retried after partial failures, and keeps every outcome traceable. The project is a submission for the Practical FDE Assessment (FDE L2).
+A background service that applies transaction requests **exactly once in effect** and **in the correct order per account**. It is built for input that is duplicated, out of order, or retried after partial failures, and keeps every outcome traceable.
 
 **Stack:** Java 17 · Spring Boot 3.4 · Spring Data JPA · H2 (embedded) · JUnit 5 · Micrometer
 
